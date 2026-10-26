@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Upoppia Repaginado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   UPOPPIA — projeção do estado final
+   Os tokens abaixo são os mesmos de tokens.css no kit.
+   ============================================================ */
+:root{
+  /* primitivos */
+  --lime:#d3ec79; --lime-hover:#c4e64c; --lime-ink:#5c7315; --lime-glow:#c2dd6a;
+  --mag:#d000a3;  --mag-ink:#8a0f68;  --mag-glow:#f08fcd;
+
+  /* semânticos — tema claro */
+  --surface:#fff; --surface-2:#eceee7; --canvas:#f4f5f2;
+  --nav:#111417; --nav-ink:#c3cac8;
+  --ink:#111417; --ink-2:#525b59; --ink-3:#697270;
+  --line:#dfe3da; --line-soft:#e8ebe5; --line-field:#848d7d;
+  --brand-ink:var(--lime-ink); --accent-ink:var(--mag-ink); --focus:var(--mag-ink);
+  --ok:#2f6b3a;     --ok-bg:#e9f3ea;
+  --warn:#8a5406;   --warn-bg:#fbf1de;
+  --danger:#a51f14; --danger-bg:#fbeae7;
+  --info:#2f5d72;   --info-bg:#e7f0f5;
+  --fill-brand:var(--lime); --fill-brand-on:#111417;
+  --hero:#111417;
+
+  --gap:14px; --row:11px; --dur:180ms;
+  --r:9px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --surface:#171b1c; --surface-2:#1f2426; --canvas:#0f1213; --nav:#080a0b;
+    --ink:#e9ebe7; --ink-2:#aeb5b3; --ink-3:#868e8b;
+    --line:#2c3234; --line-soft:#232829; --line-field:#6b7679;
+    --brand-ink:var(--lime-glow); --accent-ink:var(--mag-glow); --focus:var(--lime-glow);
+    --ok:#85cb95;     --ok-bg:#152618;
+    --warn:#e0ab52;   --warn-bg:#291f12;
+    --danger:#f4907f; --danger-bg:#2d1714;
+    --info:#83c3df;   --info-bg:#132428;
+    --hero:#22282a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface:#171b1c; --surface-2:#1f2426; --canvas:#0f1213; --nav:#080a0b;
+  --ink:#e9ebe7; --ink-2:#aeb5b3; --ink-3:#868e8b;
+  --line:#2c3234; --line-soft:#232829; --line-field:#6b7679;
+  --brand-ink:var(--lime-glow); --accent-ink:var(--mag-glow); --focus:var(--lime-glow);
+  --ok:#85cb95;     --ok-bg:#152618;
+  --warn:#e0ab52;   --warn-bg:#291f12;
+  --danger:#f4907f; --danger-bg:#2d1714;
+  --info:#83c3df;   --info-bg:#132428;
+  --hero:#22282a;
+}
+:root[data-density="compact"]{--gap:9px; --row:7px}
+:root[data-calm="on"]{--fill-brand:var(--surface-2); --fill-brand-on:var(--ink)}
+:root[data-motion="off"]{--dur:0ms}
+@media (prefers-reduced-motion:reduce){:root{--dur:0ms}}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--canvas);color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 2px var(--surface);border-radius:5px}
+
+/* ---------- casca ---------- */
+.shell{display:grid;grid-template-columns:244px minmax(0,1fr);height:100%}
+@media (max-width:899px){.shell{grid-template-columns:1fr}}
+
+.nav{
+  background:var(--nav);color:var(--nav-ink);display:flex;flex-direction:column;min-width:0;
+}
+@media (max-width:899px){
+  .nav{
+    position:fixed;inset:0 auto 0 0;width:252px;z-index:60;
+    transform:translateX(-100%);transition:transform var(--dur) ease;
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .nav.open{transform:none}
+}
+.nav-top{padding:16px 15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo{width:28px;height:28px;border-radius:7px;background:var(--lime);color:#111417;display:grid;place-items:center;font-weight:700;flex:0 0 auto}
+.logo-t{font-weight:600;font-size:15px;color:#fff;letter-spacing:-.01em}
+.nav ul{list-style:none;margin:0;padding:10px 8px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto}
+.nav a{
+  display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:7px;
+  color:var(--nav-ink);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;
+}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav a[aria-current]{background:var(--lime);color:#111417;font-weight:600}
+.nav a svg{flex:0 0 auto}
+.badge{
+  margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;
+  background:var(--mag);color:#fff;border-radius:20px;padding:1px 7px;
+}
+.nav a[aria-current] .badge{background:#111417;color:var(--lime)}
+.nav-foot{padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--lime);color:#111417;display:grid;place-items:center;font-weight:700;font-size:13px;flex:0 0 auto}
+.nav-foot .n{font-size:13px;font-weight:600;color:#fff;line-height:1.25}
+.nav-foot .e{font-size:11px;color:#8b9391;line-height:1.25}
+.nav-foot button{
+  margin-left:auto;background:none;border:0;color:var(--nav-ink);cursor:pointer;
+  width:32px;height:32px;border-radius:6px;display:grid;place-items:center;
+}
+.nav-foot button:hover{background:rgba(255,255,255,.08);color:#fff}
+
+.scrim{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:55;
+}
+.scrim.on{display:block}
+@media (min-width:900px){.scrim{display:none!important}}
+
+.body{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{
+  background:var(--surface);border-bottom:1px solid var(--line);
+  padding:0 clamp(14px,2.5vw,22px);min-height:56px;display:flex;align-items:center;gap:12px;flex:0 0 auto;
+}
+.burger{display:none;background:none;border:0;color:var(--ink);cursor:pointer;width:38px;height:38px;border-radius:7px}
+@media (max-width:899px){.burger{display:grid;place-items:center}}
+.crumb{font-size:12.5px;color:var(--ink-3);display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-width:0}
+.crumb b{color:var(--ink);font-weight:600}
+.crumb a{color:var(--ink-3);text-decoration:none;cursor:pointer}
+.crumb a:hover{color:var(--accent-ink)}
+.search{
+  margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--canvas);
+  border:1px solid var(--line);border-radius:7px;padding:7px 11px;color:var(--ink-3);font-size:13px;min-width:0;
+}
+@media (max-width:1100px){.search span{display:none}.search{min-width:0}}
+.ibtn{
+  width:36px;height:36px;border-radius:7px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink-2);display:grid;place-items:center;cursor:pointer;position:relative;flex:0 0 auto;
+}
+.ibtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.pip{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--mag)}
+.proj{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);border:1px dashed var(--line-field);border-radius:20px;padding:3px 9px;white-space:nowrap;
+}
+@media (max-width:760px){.proj{display:none}}
+
+.main{flex:1;overflow-y:auto;padding:clamp(16px,2.5vw,26px) clamp(14px,2.5vw,22px) 70px}
+@media (max-width:899px){.main{padding-bottom:84px}}
+
+/* ---------- barra inferior (celular) ---------- */
+.tabbar{display:none}
+@media (max-width:899px){
+  .tabbar{
+    display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:var(--surface);border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .tabbar button{
+    background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:9px 2px;font-size:10px;color:var(--ink-3);cursor:pointer;font-family:inherit;
+  }
+  .tabbar button[aria-current]{color:var(--brand-ink);font-weight:700}
+}
+
+/* ---------- blocos ---------- */
+.ph{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-bottom:var(--gap)}
+.ph h1{font-size:clamp(20px,2.6vw,25px);line-height:1.15;letter-spacing:-.022em;font-weight:700;margin:0;text-wrap:balance}
+.ph .sub{font-size:13.5px;color:var(--ink-2);margin:3px 0 0}
+.ph .acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:620px){.ph .acts{margin-left:0;width:100%}}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:7px;
+  border:1px solid transparent;font-family:inherit;font-weight:600;font-size:13.5px;
+  padding:8px 15px;min-height:40px;cursor:pointer;white-space:nowrap;
+  transition:background var(--dur) ease,border-color var(--dur) ease;
+}
+.btn-p{background:var(--fill-brand);color:var(--fill-brand-on);border-color:var(--fill-brand)}
+.btn-p:hover{background:var(--lime-hover);border-color:var(--lime-hover)}
+:root[data-calm="on"] .btn-p{border-color:var(--brand-ink)}
+:root[data-calm="on"] .btn-p:hover{background:var(--surface-2);border-color:var(--ink)}
+.btn-g{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn-g:hover{border-color:var(--ink-3)}
+.btn-q{background:transparent;color:var(--ink-2)}
+.btn-q:hover{background:var(--surface-2)}
+.btn-s{font-size:12.5px;padding:6px 11px;min-height:34px}
+.btn-i{width:40px;padding:0}
+
+.pill{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)}
+.p-wa{background:var(--warn-bg);color:var(--warn)}
+.p-da{background:var(--danger-bg);color:var(--danger)}
+.p-in{background:var(--info-bg);color:var(--info)}
+.p-mu{background:var(--surface-2);color:var(--ink-2)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.sk{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;margin:0 0 9px;display:flex;align-items:center;gap:8px;
+}
+.sk .c{background:var(--surface-2);color:var(--ink-2);border-radius:20px;padding:0 7px;letter-spacing:.03em}
+.cols{display:grid;gap:var(--gap)}
+@media (min-width:980px){.c2{grid-template-columns:1fr 1fr}}
+.c3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.cT{grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+
+/* custódia */
+.hero{
+  background:var(--hero);color:#fff;border-radius:var(--r);padding:19px 21px;
+  display:flex;flex-wrap:wrap;gap:16px 38px;align-items:center;margin-bottom:var(--gap);
+}
+:root[data-calm="on"] .hero{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.hero .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9aa39f}
+:root[data-calm="on"] .hero .k{color:var(--ink-2)}
+.hero .v{font-size:clamp(24px,3.4vw,30px);font-weight:700;letter-spacing:-.03em;color:var(--lime);line-height:1.1;margin-top:3px;font-variant-numeric:tabular-nums}
+:root[data-calm="on"] .hero .v{color:var(--ink)}
+.hero .v.s{font-size:20px;color:#fff}
+:root[data-calm="on"] .hero .v.s{color:var(--ink)}
+.hero .n{font-size:12.5px;color:#9aa39f;margin-top:2px}
+:root[data-calm="on"] .hero .n{color:var(--ink-2)}
+.hero .cta{margin-left:auto}
+@media (max-width:620px){.hero .cta{margin-left:0;width:100%}.hero .cta .btn{width:100%}}
+
+/* linha de tarefa */
+.task{display:flex;align-items:center;gap:11px;padding:var(--row) 14px;border-bottom:1px solid var(--line-soft)}
+.task:last-child{border-bottom:0}
+.ico{width:32px;height:32px;border-radius:7px;display:grid;place-items:center;flex:0 0 auto;font-weight:700;font-size:13px}
+.i-da{background:var(--danger-bg);color:var(--danger)}
+.i-wa{background:var(--warn-bg);color:var(--warn)}
+.i-in{background:var(--info-bg);color:var(--info)}
+.i-ok{background:var(--ok-bg);color:var(--ok)}
+.task .tb{min-width:0;flex:1}
+.task .tt{font-size:13.5px;font-weight:600;line-height:1.3}
+.task .ts{font-size:12.5px;color:var(--ink-2);margin-top:1px}
+.task .ta{margin-left:auto;flex:0 0 auto}
+@media (max-width:560px){
+  .task{flex-wrap:wrap}
+  .task .ta{margin-left:43px;width:calc(100% - 43px);margin-top:7px}
+  .task .ta .btn{width:100%}
+}
+
+.bar{height:6px;border-radius:20px;background:var(--surface-2);overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;border-radius:20px;background:var(--brand-ink);transition:width var(--dur) ease}
+.bar i.ok{background:var(--ok)}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 0}
+.kv span:last-child{font-family:"IBM Plex Mono",monospace;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* cartão de talento */
+.tal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px;display:flex;flex-direction:column;gap:11px;cursor:pointer;transition:border-color var(--dur) ease}
+.tal:hover{border-color:var(--ink-3)}
+.tal-h{display:flex;gap:11px;align-items:flex-start}
+.tav{width:44px;height:44px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font-weight:700;font-size:16px;color:#111417}
+.tn{font-size:14.5px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.tl{font-size:12.5px;color:var(--ink-2);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sig{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border-radius:6px;overflow:hidden}
+.sig div{background:var(--surface);padding:7px 8px}
+.sig .k{font-family:"IBM Plex Mono",monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.sig .v{font-size:13.5px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11.5px;background:var(--surface-2);color:var(--ink-2);border-radius:20px;padding:3px 9px}
+.chip.m{background:var(--ok-bg);color:var(--ok);font-weight:600}
+.tal-f{display:flex;gap:7px;margin-top:auto;padding-top:2px}
+.tal-f .btn{flex:1}
+
+/* filtros */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.fb{
+  font-family:inherit;font-size:13px;font-weight:500;padding:7px 13px;border-radius:20px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;min-height:36px;
+}
+.fb.on{background:var(--ink);color:var(--canvas);border-color:var(--ink);font-weight:600}
+.rl{font-size:13px;color:var(--ink-2);margin-bottom:12px}
+.rl b{color:var(--ink)}
+
+/* abas */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tab{
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink-3);background:none;border:0;
+  padding:10px 15px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+  min-width:104px;white-space:nowrap;
+}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent-ink)}
+
+/* tabela */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:13.5px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-soft)}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+tbody tr:last-child td{border-bottom:0}
+.sw{display:inline-block;width:40px;height:23px;border-radius:20px;background:var(--ok);position:relative;border:0;cursor:pointer}
+.sw i{position:absolute;top:3px;right:3px;width:17px;height:17px;border-radius:50%;background:#fff}
+.sw.off{background:var(--line-field)}
+.sw.off i{right:auto;left:3px}
+.act{width:40px;height:40px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);display:inline-grid;place-items:center;margin-left:5px;cursor:pointer}
+.act:hover{border-color:var(--ink-3);color:var(--ink)}
+.act.d:hover{border-color:var(--danger);color:var(--danger)}
+
+/* perfil */
+.prof{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-bottom:22px}
+.pav{width:104px;height:104px;border-radius:14px;flex:0 0 auto;display:grid;place-items:center;font-weight:700;font-size:38px;color:#111417}
+.hist{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.hist:last-child{border-bottom:0}
+.hist .d{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);flex:0 0 70px;padding-top:2px}
+.stars{color:var(--warn);letter-spacing:1px}
+
+/* painel de conforto */
+.panel{
+  position:fixed;right:0;top:0;bottom:0;width:min(330px,88vw);z-index:70;background:var(--surface);
+  border-left:1px solid var(--line);transform:translateX(100%);transition:transform var(--dur) ease;
+  display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);
+}
+.panel.open{transform:none}
+.panel-h{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.panel-h h2{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
+.panel-b{padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.opt{display:flex;flex-direction:column;gap:7px}
+.opt .l{font-size:13.5px;font-weight:600}
+.opt .h{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.seg{display:flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:3px}
+.seg button{
+  flex:1;font-family:inherit;font-size:12.5px;font-weight:500;padding:7px 8px;border:0;border-radius:5px;
+  background:transparent;color:var(--ink-2);cursor:pointer;min-height:34px;
+}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--canvas);font-weight:600}
+
+/* valores monetários e o olho de privacidade */
+.val{transition:color var(--dur) ease}
+.val.hid{
+  letter-spacing:.14em;
+  /* os pontos herdam a cor do número, então o bloco continua equilibrado */
+  font-variant-numeric:normal;
+}
+.eye-hero{
+  background:rgba(255,255,255,.12);border:0;color:#fff;width:30px;height:30px;border-radius:7px;
+  display:inline-grid;place-items:center;cursor:pointer;margin-left:7px;vertical-align:middle;
+  transition:background var(--dur) ease;
+}
+.eye-hero:hover{background:rgba(255,255,255,.22)}
+:root[data-calm="on"] .eye-hero{background:var(--line);color:var(--ink)}
+:root[data-calm="on"] .eye-hero:hover{background:var(--line-field)}
+.hero .kl{display:flex;align-items:center}
+
+.empty{border:1px dashed var(--line-field);border-radius:var(--r);padding:34px 20px;text-align:center}
+.empty p{margin:0 0 14px;color:var(--ink-2);font-size:14px}
+
+.note{font-size:12.5px;color:var(--ink-3);margin-top:12px;max-width:72ch}
+h3{font-size:16px;font-weight:700;margin:22px 0 10px;letter-spacing:-.01em}
+.map{height:150px;border-radius:var(--r);border:1px solid var(--line);background:
+  repeating-linear-gradient(45deg,var(--surface-2) 0 11px,var(--surface) 11px 22px);
+  display:grid;place-items:center;color:var(--ink-3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="nav" id="nav" aria-label="Navegação principal">
+    <div class="nav-top">
+      <div class="logo">U</div>
+      <div class="logo-t">Upoppia</div>
+    </div>
+    <ul id="navList">
+      <li><a data-go="inicio" aria-current="page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Início</a></li>
+      <li><a data-go="talentos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Talentos</a></li>
+      <li><a data-go="eventos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Eventos</a></li>
+      <li><a data-go="edicao">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="m3 12.5 9 4.5 9-4.5M3 17l9 4.5 9-4.5"/></svg>Edições<span class="badge">2</span></a></li>
+      <li><a data-go="escalacao">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>Escalação</a></li>
+      <li><a data-go="pagamentos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Pagamentos<span class="badge">3</span></a></li>
+      <li><a data-go="mensagens">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.9A8.4 8.4 0 1 1 21 11.5Z"/></svg>Mensagens</a></li>
+    </ul>
+    <div class="nav-foot">
+      <div class="av">F</div>
+      <div style="min-width:0">
+        <div class="n">Fabio Machado</div>
+        <div class="e">Upoppia · São Paulo</div>
+      </div>
+      <button id="openPanel" aria-label="Conforto visual" title="Conforto visual">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="scrim"></div>
+
+  <div class="body">
+    <header class="topbar">
+      <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="crumb" id="crumb"><b>Início</b></div>
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Buscar talento, evento ou edição</span>
+      </div>
+      <span class="proj">Projeção · pessoas e valores fictícios</span>
+      <button class="ibtn" data-eye type="button" aria-pressed="false" aria-label="Ocultar valores" title="Ocultar valores"></button>
+      <button class="ibtn" aria-label="Notificações">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="pip"></span>
+      </button>
+    </header>
+
+    <main class="main" id="screen" tabindex="-1"></main>
+
+    <nav class="tabbar" aria-label="Atalhos">
+      <button data-go="inicio" aria-current="page">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg>Hoje</button>
+      <button data-go="escalacao">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Equipe</button>
+      <button data-go="mensagens">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.9A8.4 8.4 0 1 1 21 11.5Z"/></svg>Mensagens</button>
+      <button data-go="talentos">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Mais</button>
+    </nav>
+  </div>
+</div>
+
+<aside class="panel" id="panel" aria-label="Conforto visual" aria-hidden="true">
+  <div class="panel-h">
+    <h2>Conforto visual</h2>
+    <button class="ibtn" id="closePanel" aria-label="Fechar" style="margin-left:auto">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-b">
+    <p style="margin:0;font-size:13px;color:var(--ink-2)">Ajuste a intensidade da interface. Vale só para você, em qualquer aparelho.</p>
+
+    <div class="opt">
+      <span class="l">Tema</span>
+      <div class="seg" data-pref="theme">
+        <button data-v="system" aria-pressed="true">Sistema</button>
+        <button data-v="light" aria-pressed="false">Claro</button>
+        <button data-v="dark" aria-pressed="false">Escuro</button>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="l">Densidade</span>
+      <div class="seg" data-pref="density">
+        <button data-v="comfortable" aria-pressed="true">Confortável</button>
+        <button data-v="compact" aria-pressed="false">Compacta</button>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="l">Reduzir cor</span>
+      <span class="h">Deixa o verde e o rosa da marca em tom mais baixo, mantendo a mesma identidade.</span>
+      <div class="seg" data-pref="calm">
+        <button data-v="off" aria-pressed="true">Não</button>
+        <button data-v="on" aria-pressed="false">Sim</button>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="l">Reduzir movimento</span>
+      <span class="h">Desliga animações e transições.</span>
+      <div class="seg" data-pref="motion">
+        <button data-v="on" aria-pressed="true">Não</button>
+        <button data-v="off" aria-pressed="false">Sim</button>
+      </div>
+    </div>
+
+    <p style="margin:0;font-size:12.5px;color:var(--ink-3)">Se você já ativou "reduzir movimento" no seu aparelho, a Upoppia respeita isso automaticamente.</p>
+  </div>
+</aside>
+
+<script>
+(function(){
+  "use strict";
+
+  var root = document.documentElement;
+  var screen = document.getElementById('screen');
+  var crumb = document.getElementById('crumb');
+  var nav = document.getElementById('nav');
+  var scrim = document.getElementById('scrim');
+
+  /* ---------- ícones ---------- */
+  function svg(d){
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+           'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
+  }
+  var ICO = {
+    olho:  svg('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>'),
+    lapis: svg('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    lixo:  svg('<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>'),
+    alerta: svg('<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>'),
+    moeda: svg('<circle cx="12" cy="12" r="9"/><path d="M15 9.5a3 3 0 0 0-3-1.5c-1.7 0-3 .9-3 2s1.3 2 3 2 3 .9 3 2-1.3 2-3 2a3 3 0 0 1-3-1.5"/>'),
+    chat:  svg('<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-4.9A8.4 8.4 0 1 1 21 11.5Z"/>'),
+    alvo:  svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>'),
+    ciclo: svg('<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>')
+  };
+
+  function svg17(d){
+    return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+           'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
+  }
+  var OLHO_ABERTO = svg17('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>');
+  var OLHO_FECHADO = svg17('<path d="M10.6 5.2A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-3 4"/>' +
+                           '<path d="M6.6 6.6A18 18 0 0 0 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/>' +
+                           '<path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m2 2 20 20"/>');
+
+  /* ---------- dados ---------- */
+  var AVC = ['#e7eec6','#f2d8ea','#cfe4ef','#ece2b8','#ddd4f0','#c9e8d6'];
+
+  var TAL = [
+    {n:'Rafael Monteiro Lima', c:'Londrina', i:'RL', ev:14, av:'4,9', r:480, d:'livre',
+     oc:[['Produção Técnica (Áudio, Luz, Vídeo & Palco)',1],['Logística & Suprimentos',0]]},
+    {n:'Camila Duarte Rezende', c:'São Paulo', i:'CR', ev:23, av:'5,0', r:550, d:'livre',
+     oc:[['Operações de Público & Experiência do Visitante',1],['Artist Relations & Backstage',0]]},
+    {n:'Bruno Tavares', c:'Brasília', i:'BT', ev:9, av:'4,7', r:420, d:'livre',
+     oc:[['Produção Técnica (Áudio, Luz, Vídeo & Palco)',1]]},
+    {n:'Helena Correia Pinto', c:'Campinas', i:'HP', ev:11, av:'4,8', r:400, d:'confirmar',
+     oc:[['Cinema, TV & Produção Audiovisual',1],['Comunicação, Imprensa & Conteúdo',0]]},
+    {n:'Marcos A. de Souza', c:'São Paulo', i:'MS', ev:6, av:'4,6', r:380, d:'livre',
+     oc:[['Direção & Gestão',0],['Hospedagem, Viagens & Transporte',0]]},
+    {n:'Tiago Vasconcelos', c:'São Paulo', i:'TV', ev:18, av:'4,9', r:610, d:'ocupado',
+     oc:[['Produção Técnica (Áudio, Luz, Vídeo & Palco)',1]]}
+  ];
+
+  function brl(n){ return 'R$ ' + n.toLocaleString('pt-BR'); }
+
+  /* ---------- privacidade de valores ----------
+     Em vez de marcar cada campo à mão (e esquecer algum), varremos o HTML já
+     renderizado e envolvemos todo padrão "R$ ..." num <span class="val">.
+     Pega os campos de hoje e qualquer um que for adicionado depois. */
+  var OCULTO = false;
+  try { OCULTO = localStorage.getItem('upoppia:valores') === 'ocultos'; } catch (e) {}
+
+  var RE_VALOR = /R\$\s?\d[\d.]*(?:,\d{2})?/g;
+
+  function marcarValores(raiz){
+    var alvos = [];
+    var passo = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, null);
+    while (passo.nextNode()){
+      var n = passo.currentNode;
+      if (n.parentNode && n.parentNode.classList && n.parentNode.classList.contains('val')) continue;
+      RE_VALOR.lastIndex = 0;
+      if (RE_VALOR.test(n.nodeValue)) alvos.push(n);
+    }
+
+    alvos.forEach(function(n){
+      var txt = n.nodeValue, frag = document.createDocumentFragment(), fim = 0, m;
+      RE_VALOR.lastIndex = 0;
+      while ((m = RE_VALOR.exec(txt)) !== null){
+        if (m.index > fim) frag.appendChild(document.createTextNode(txt.slice(fim, m.index)));
+        var s = document.createElement('span');
+        s.className = 'val';
+        s.setAttribute('data-val', m[0]);
+        s.textContent = m[0];
+        frag.appendChild(s);
+        fim = m.index + m[0].length;
+      }
+      if (fim < txt.length) frag.appendChild(document.createTextNode(txt.slice(fim)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+
+  function aplicarPrivacidade(){
+    var els = document.querySelectorAll('.val');
+    for (var i = 0; i < els.length; i++){
+      var v = els[i].getAttribute('data-val');
+      if (OCULTO){
+        // Quantidade de pontos proporcional ao número, para o bloco não "pular"
+        var digitos = v.replace(/\D/g, '').length;
+        els[i].textContent = new Array(Math.max(4, Math.min(7, digitos)) + 1).join('•');
+        els[i].classList.add('hid');
+        els[i].setAttribute('title', 'Valor oculto');
+      } else {
+        els[i].textContent = v;
+        els[i].classList.remove('hid');
+        els[i].removeAttribute('title');
+      }
+    }
+
+    var rotulo = OCULTO ? 'Mostrar valores' : 'Ocultar valores';
+    var icone = OCULTO ? OLHO_FECHADO : OLHO_ABERTO;
+    var botoes = document.querySelectorAll('[data-eye]');
+    for (var j = 0; j < botoes.length; j++){
+      botoes[j].innerHTML = icone;
+      botoes[j].setAttribute('aria-pressed', String(OCULTO));
+      botoes[j].setAttribute('aria-label', rotulo);
+      botoes[j].setAttribute('title', rotulo);
+    }
+  }
+
+  function alternarPrivacidade(){
+    OCULTO = !OCULTO;
+    try { localStorage.setItem('upoppia:valores', OCULTO ? 'ocultos' : 'visiveis'); } catch (e) {}
+    aplicarPrivacidade();
+  }
+
+  // Olho que acompanha o saldo no bloco de custódia, como nos apps de banco.
+  function olhoHero(){
+    return '<button class="eye-hero" data-eye type="button" aria-pressed="false" aria-label="Ocultar valores"></button>';
+  }
+
+  function dispPill(d){
+    if (d === 'ocupado') return '<span class="pill p-da">Ocupado 26/02</span>';
+    if (d === 'confirmar') return '<span class="pill p-wa">Confirmar</span>';
+    return '<span class="pill p-ok">Livre em 26/02</span>';
+  }
+
+  function talCard(t, idx){
+    var chips = t.oc.map(function(o){
+      return '<span class="chip' + (o[1] ? ' m' : '') + '">' + (o[1] ? '✓ ' : '') + o[0] + '</span>';
+    }).join('');
+    var acoes = t.d === 'ocupado'
+      ? '<button class="btn btn-g btn-s">Ver agenda</button><button class="btn btn-g btn-s">Mensagem</button>'
+      : '<button class="btn btn-p btn-s">Convidar</button><button class="btn btn-g btn-s">Mensagem</button>';
+    return '' +
+      '<article class="tal" data-perfil="' + idx + '">' +
+        '<div class="tal-h">' +
+          '<div class="tav" style="background:' + AVC[idx % AVC.length] + '">' + t.i + '</div>' +
+          '<div style="min-width:0;flex:1">' +
+            '<div class="tn">' + t.n + '</div>' +
+            '<div class="tl">' + t.c + ' ' + dispPill(t.d) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="sig">' +
+          '<div><div class="k">Eventos</div><div class="v">' + t.ev + '</div></div>' +
+          '<div><div class="k">Avaliação</div><div class="v">' + t.av + ' ★</div></div>' +
+          '<div><div class="k">Cachê</div><div class="v" style="font-size:12px">' + brl(t.r) + '</div></div>' +
+        '</div>' +
+        '<div class="chips">' + chips + '</div>' +
+        '<div class="tal-f">' + acoes + '</div>' +
+      '</article>';
+  }
+
+  /* ---------- telas ---------- */
+  var V = {};
+
+  V.inicio = function(){
+    return '' +
+    '<div class="ph">' +
+      '<div><h1>Boa tarde, Fabio</h1><p class="sub">Terça, 24 de outubro · 2 edições em andamento</p></div>' +
+      '<div class="acts"><button class="btn btn-p">+ Novo evento</button></div>' +
+    '</div>' +
+
+    '<div class="hero">' +
+      '<div><div class="k kl">Em custódia Upoppia' + olhoHero() + '</div><div class="v">R$ 48.320,00</div>' +
+      '<div class="n">Já provisionado por você, retido até o repasse</div></div>' +
+      '<div><div class="k">A liberar esta semana</div><div class="v s">R$ 12.750,00</div>' +
+      '<div class="n">14 freelancers · 3 edições</div></div>' +
+      '<div class="cta"><button class="btn btn-p" data-go="pagamentos">Revisar repasses</button></div>' +
+    '</div>' +
+
+    '<div class="cols c2">' +
+      '<section>' +
+        '<h2 class="sk">Precisa de você <span class="c">4</span></h2>' +
+        '<div class="card">' +
+          task('i-da',ICO.alerta,'3 contratos aguardando sua assinatura','Onboarding Courier · vence em 2 dias','btn-p','Assinar') +
+          task('i-wa',ICO.moeda,'R$ 4.200,00 a provisionar','Lançamento Upoppia Technologies · 7 vagas','btn-g','Provisionar') +
+          task('i-in',ICO.chat,'2 mensagens sem resposta','Camila Duarte Rezende · há 6 horas','btn-g','Abrir') +
+          task('i-wa',ICO.alvo,'1 vaga sem candidatura há 9 dias','International Onboard Courier · Allianz Parque','btn-g','Convidar') +
+        '</div>' +
+        '<p class="note">Contador zerado não ocupa espaço: o que está resolvido sai da tela.</p>' +
+      '</section>' +
+
+      '<div style="display:flex;flex-direction:column;gap:var(--gap)">' +
+        '<section>' +
+          '<h2 class="sk">Em andamento <span class="c">2</span></h2>' +
+          '<div style="display:flex;flex-direction:column;gap:var(--gap)">' +
+            edCard('Onboarding Courier','Allianz Parque · 26 fev','5 / 8','R$ 6.050',62,'Faltam 3','p-wa') +
+            edCard('Lançamento Upoppia Technologies','Vila Olímpia · 12 mar','7 / 7','R$ 18.400',100,'Completa','p-ok') +
+          '</div>' +
+        '</section>' +
+        '<section>' +
+          '<h2 class="sk">Próximos 14 dias</h2>' +
+          '<div class="card">' +
+            tl('26','fev','Onboarding Courier','Montagem 06h · 8 pessoas','p-wa','Escalação incompleta') +
+            tl('01','mar','Repasse automático','Onboarding Courier · R$ 6.050','p-in','Agendado') +
+            tl('12','mar','Lançamento Upoppia','Evento · 7 pessoas','p-ok','Tudo pronto') +
+          '</div>' +
+        '</section>' +
+      '</div>' +
+    '</div>';
+  };
+
+  function task(ic, gl, t, s, bc, bl){
+    return '<div class="task"><div class="ico ' + ic + '">' + gl + '</div>' +
+      '<div class="tb"><div class="tt">' + t + '</div><div class="ts">' + s + '</div></div>' +
+      '<div class="ta"><button class="btn ' + bc + ' btn-s">' + bl + '</button></div></div>';
+  }
+
+  function edCard(n, s, v, o, pct, lab, cls){
+    return '<div class="card" style="padding:15px 16px;cursor:pointer" data-go="edicao">' +
+      '<div style="display:flex;gap:10px;align-items:flex-start">' +
+        '<div style="min-width:0;flex:1"><div style="font-size:14.5px;font-weight:600;letter-spacing:-.01em">' + n + '</div>' +
+        '<div style="font-size:12.5px;color:var(--ink-2);margin-top:2px">' + s + '</div></div>' +
+        '<span class="pill ' + cls + '">' + lab + '</span></div>' +
+      '<div style="margin-top:11px"><div class="kv"><span style="color:var(--ink-2)">Vagas preenchidas</span><span>' + v + '</span></div>' +
+      '<div class="bar"><i class="' + (pct === 100 ? 'ok' : '') + '" style="width:' + pct + '%"></i></div></div>' +
+      '<div class="kv" style="margin-top:9px"><span style="color:var(--ink-2)">Orçado</span><span>' + o + '</span></div></div>';
+  }
+
+  function tl(d, m, t, s, cls, lab){
+    return '<div class="task"><div class="ico" style="background:var(--surface-2);color:var(--ink-2);flex-direction:column;line-height:1;gap:1px">' +
+      '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:700">' + d + '</span>' +
+      '<span style="font-size:8px;text-transform:uppercase">' + m + '</span></div>' +
+      '<div class="tb"><div class="tt">' + t + '</div><div class="ts">' + s + '</div></div>' +
+      '<div class="ta"><span class="pill ' + cls + '">' + lab + '</span></div></div>';
+  }
+
+  V.talentos = function(){
+    return '' +
+    '<div class="ph">' +
+      '<div><h1>Talentos</h1><p class="sub">Escalando <b>Onboarding Courier</b> · Allianz Parque · 26 fev</p></div>' +
+    '</div>' +
+    '<div class="filters">' +
+      '<button class="fb on">Disponíveis em 26/02 <span aria-hidden="true">×</span></button>' +
+      '<button class="fb on">Produção Técnica <span aria-hidden="true">×</span></button>' +
+      '<button class="fb on">Até 40 km do local <span aria-hidden="true">×</span></button>' +
+      '<button class="fb">+ Cachê</button>' +
+      '<button class="fb">+ Já trabalhou comigo</button>' +
+      '<button class="fb">+ Avaliação mínima</button>' +
+    '</div>' +
+    '<div class="rl"><b>84</b> talentos de 2.246 — ordenados por <b>compatibilidade com a vaga</b>, depois proximidade</div>' +
+    '<div class="cols cT">' + TAL.map(talCard).join('') + '</div>' +
+    '<div style="text-align:center;margin-top:20px">' +
+      '<button class="btn btn-g">Carregar mais 12</button>' +
+      '<p class="note" style="margin-inline:auto">Perfis sem ocupação cadastrada não entram nesta lista — aparecem só na busca por nome.</p>' +
+    '</div>';
+  };
+
+  V.perfil = function(idx){
+    var t = TAL[idx || 1];
+    var chips = t.oc.map(function(o){
+      return '<span class="chip' + (o[1] ? ' m' : '') + '">' + (o[1] ? '✓ ' : '') + o[0] + '</span>';
+    }).join('');
+    return '' +
+    '<div class="prof">' +
+      '<div class="pav" style="background:' + AVC[(idx || 1) % AVC.length] + '">' + t.i + '</div>' +
+      '<div style="min-width:0;flex:1">' +
+        '<h1 style="font-size:clamp(21px,3vw,27px);font-weight:700;letter-spacing:-.025em;margin:0">' + t.n + '</h1>' +
+        '<p class="sub" style="margin-top:5px">' + t.c + ' · a 6 km do Allianz Parque ' + dispPill(t.d) + '</p>' +
+        '<div class="chips" style="margin-top:11px">' + chips + '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:15px">' +
+          '<button class="btn btn-p">Convidar para uma posição</button>' +
+          '<button class="btn btn-g">Mensagem</button>' +
+          '<button class="btn btn-g">☆ Salvar na lista</button>' +
+          '<button class="btn btn-g">Ver disponibilidade</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="cols c2">' +
+      '<section>' +
+        '<h2 class="sk">Histórico na plataforma</h2>' +
+        '<div class="card" style="padding:4px 16px">' +
+          hist('mai 2026','Festa do Peão de Barretos','Coordenação de público · 4 diárias','★★★★★','Pontual e resolveu o gargalo do portão B sozinha.') +
+          hist('mar 2026','Lollapalooza BR','Artist relations · 3 diárias','★★★★★','') +
+          hist('nov 2025','Rock in Rio','Operações de público · 7 diárias','★★★★☆','') +
+        '</div>' +
+      '</section>' +
+      '<div style="display:flex;flex-direction:column;gap:var(--gap)">' +
+        '<section>' +
+          '<h2 class="sk">Números</h2>' +
+          '<div class="card" style="padding:15px 16px">' +
+            '<div class="kv"><span style="color:var(--ink-2)">Eventos concluídos</span><span>' + t.ev + '</span></div>' +
+            '<div class="kv"><span style="color:var(--ink-2)">Avaliação média</span><span>' + t.av + ' / 5</span></div>' +
+            '<div class="kv"><span style="color:var(--ink-2)">Comparecimento</span><span>100%</span></div>' +
+            '<div class="kv"><span style="color:var(--ink-2)">Faixa de cachê</span><span>' + brl(t.r) + ' – ' + brl(t.r + 140) + '</span></div>' +
+            '<div class="kv"><span style="color:var(--ink-2)">Responde em</span><span>~2 h</span></div>' +
+          '</div>' +
+        '</section>' +
+        '<section>' +
+          '<h2 class="sk">Vocês já trabalharam juntos</h2>' +
+          '<div class="card" style="padding:15px 16px;font-size:13.5px;color:var(--ink-2)">' +
+            'Escalada por você em <b style="color:var(--ink)">Festa do Peão de Barretos</b> (mai 2026). Repasse concluído em 3 dias, sem pendências.' +
+          '</div>' +
+        '</section>' +
+      '</div>' +
+    '</div>';
+  };
+
+  function hist(d, t, s, st, q){
+    return '<div class="hist"><div class="d">' + d + '</div><div style="min-width:0">' +
+      '<div style="font-size:13.5px;font-weight:600">' + t + '</div>' +
+      '<div style="font-size:12.5px;color:var(--ink-2);margin-top:1px">' + s + ' · <span class="stars">' + st + '</span></div>' +
+      (q ? '<div style="font-size:12.5px;color:var(--ink-3);font-style:italic;margin-top:5px">“' + q + '”</div>' : '') +
+      '</div></div>';
+  }
+
+  V.eventos = function(){
+    var evs = [
+      ['Onboarding Courier','1 edição · Allianz Parque','26 fev 2026','Faltam 3','p-wa'],
+      ['Lançamento Oficial Upoppia Technologies','1 edição · Vila Olímpia','12 mar 2026','Completa','p-ok'],
+      ['Lançamento Upoppia','1 edição · São Paulo','18 out 2026','Encerrada','p-mu']
+    ];
+    return '' +
+    '<div class="ph">' +
+      '<div><h1>Eventos</h1><p class="sub">3 eventos · 2 em andamento</p></div>' +
+      '<div class="acts"><button class="btn btn-p">+ Novo evento</button></div>' +
+    '</div>' +
+    '<div class="cols cT">' + evs.map(function(e){
+      return '<div class="card" style="padding:16px;cursor:pointer" data-go="edicao">' +
+        '<div style="display:flex;gap:10px;align-items:flex-start">' +
+          '<div style="min-width:0;flex:1"><div style="font-size:15px;font-weight:600;letter-spacing:-.01em">' + e[0] + '</div>' +
+          '<div style="font-size:12.5px;color:var(--ink-2);margin-top:3px">' + e[1] + '</div></div>' +
+          '<span class="pill ' + e[4] + '">' + e[3] + '</span></div>' +
+        '<div class="kv" style="margin-top:13px;border-top:1px solid var(--line-soft);padding-top:11px">' +
+          '<span style="color:var(--ink-2)">Próxima data</span><span>' + e[2] + '</span></div></div>';
+    }).join('') + '</div>';
+  };
+
+  V.edicao = function(tab){
+    tab = tab || 'visao';
+    var abas = [['visao','Visão geral'],['areas','Áreas'],['posicoes','Posições'],['escala','Escalação'],['pgto','Pagamentos']];
+    var head = '' +
+    '<div class="ph">' +
+      '<div><h1>Onboarding Courier</h1>' +
+      '<p class="sub">Allianz Parque, São Paulo · 26 fev 2026 · <span class="pill p-wa">Escalação incompleta</span></p></div>' +
+      '<div class="acts"><button class="btn btn-g">Editar edição</button><button class="btn btn-p">+ Nova posição</button></div>' +
+    '</div>' +
+    '<div class="tabs" role="tablist">' + abas.map(function(a){
+      return '<button class="tab" role="tab" data-tab="' + a[0] + '" aria-selected="' + (a[0] === tab) + '">' + a[1] + '</button>';
+    }).join('') + '</div>';
+
+    if (tab === 'posicoes') {
+      return head +
+      '<div class="tw"><table>' +
+        '<thead><tr><th style="width:74px">Publicar</th><th>Posição</th><th>Escalação</th><th>Cachê</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>' +
+        '<tbody>' +
+          row('International Onboard Courier','Allianz Parque · 06h–18h','0 / 1','R$ 480','p-da','Sem candidatos',true) +
+          row('Assistente de Logística','Portão B · 05h–14h','2 / 2','R$ 380','p-ok','Confirmado',true) +
+          row('Motorista de apoio','Base externa · 04h–16h','3 / 5','R$ 520','p-wa','Faltam 2',true) +
+          row('Coordenação de público','Setor A · 08h–20h','0 / 0','—','p-mu','Rascunho',false) +
+        '</tbody></table></div>' +
+      '<p class="note">Cada linha diz quantas pessoas faltam, o status aparece em palavra além da cor, e os alvos de ação têm 40px.</p>';
+    }
+
+    if (tab === 'areas') {
+      return head + '<div class="empty"><p>Nenhuma área cadastrada ainda.</p>' +
+        '<button class="btn btn-p">+ Nova área</button></div>';
+    }
+
+    if (tab === 'escala') {
+      return head +
+      '<div class="cols cT">' + TAL.slice(0, 3).map(function(t, i){
+        return '<div class="card" style="padding:15px;display:flex;gap:11px;align-items:center">' +
+          '<div class="tav" style="background:' + AVC[i % AVC.length] + '">' + t.i + '</div>' +
+          '<div style="min-width:0;flex:1"><div class="tn">' + t.n + '</div>' +
+          '<div style="font-size:12.5px;color:var(--ink-2);margin-top:2px">' + t.oc[0][0].split('(')[0] + '</div></div>' +
+          '<span class="pill p-ok">Check-in</span></div>';
+      }).join('') + '</div>' +
+      '<p class="note">A aba se chama Escalação, não "Time" — mesma palavra que o produtor usa.</p>';
+    }
+
+    if (tab === 'pgto') {
+      return head +
+      '<div class="hero" style="margin-bottom:var(--gap)">' +
+        '<div><div class="k kl">Retido para esta edição' + olhoHero() + '</div><div class="v">R$ 2.400,00</div>' +
+        '<div class="n">Liberação automática em 01/03</div></div>' +
+        '<div class="cta"><button class="btn btn-p">Antecipar repasse</button></div>' +
+      '</div>' +
+      '<div class="tw"><table><thead><tr><th>Freelancer</th><th>Posição</th><th>Valor</th><th>Status</th></tr></thead><tbody>' +
+        '<tr><td>Camila Duarte Rezende</td><td>Operações de Público</td><td class="mono">R$ 550</td><td><span class="pill p-ok">Pago</span></td></tr>' +
+        '<tr><td>Bruno Tavares</td><td>Produção Técnica</td><td class="mono">R$ 420</td><td><span class="pill p-in">Em custódia</span></td></tr>' +
+        '<tr><td>Rafael Monteiro Lima</td><td>Produção Técnica</td><td class="mono">R$ 480</td><td><span class="pill p-wa">A provisionar</span></td></tr>' +
+      '</tbody></table></div>';
+    }
+
+    return head +
+    '<div class="cols c2" style="margin-bottom:var(--gap)">' +
+      '<div><h2 class="sk">Local e data</h2><div class="card" style="padding:15px 16px">' +
+        '<div class="kv"><span style="color:var(--ink-2)">Local</span><span style="font-family:inherit;font-weight:500">Allianz Parque</span></div>' +
+        '<div class="kv"><span style="color:var(--ink-2)">Cidade</span><span style="font-family:inherit;font-weight:500">São Paulo, SP</span></div>' +
+        '<div class="kv"><span style="color:var(--ink-2)">Início</span><span>26/02/2026</span></div>' +
+        '<div class="kv"><span style="color:var(--ink-2)">Término</span><span>26/02/2026</span></div>' +
+      '</div></div>' +
+      '<div><h2 class="sk">Resumo financeiro</h2><div class="card" style="padding:15px 16px">' +
+        '<div class="kv"><span style="color:var(--ink-2)">● Realizado (pago)</span><span>R$ 550,00 · 9%</span></div>' +
+        '<div class="bar"><i class="ok" style="width:9%"></i></div>' +
+        '<div class="kv" style="margin-top:11px"><span style="color:var(--ink-2)">● Comprometido</span><span>R$ 3.740,00 · 62%</span></div>' +
+        '<div class="bar"><i style="width:62%"></i></div>' +
+        '<div style="border-top:1px solid var(--line-soft);margin-top:13px;padding-top:9px">' +
+          '<div class="kv"><span style="color:var(--ink-2)">Orçado</span><span>R$ 6.050,00</span></div>' +
+          '<div class="kv"><span style="color:var(--ink-2)">Saldo a realizar</span><span>R$ 2.310,00</span></div>' +
+        '</div></div></div>' +
+    '</div>' +
+
+    '<div class="cols c3" style="margin-bottom:var(--gap)">' +
+      stat('Vagas preenchidas','5','/ 8',62,'') +
+      stat('Check-ins','0','/ 5',0,'') +
+      stat('Em custódia','R$ 2.400','liberação 01/03',40,'ok') +
+    '</div>' +
+
+    '<h2 class="sk">Mapa</h2><div class="map">Allianz Parque · raio de 40 km</div>' +
+    '<p class="note">O resumo financeiro é a melhor peça do app hoje e foi mantido como está.</p>';
+  };
+
+  function stat(k, v, s, pct, cls){
+    return '<div class="card" style="padding:15px 16px"><div class="sk" style="margin-bottom:6px">' + k + '</div>' +
+      '<div style="display:flex;align-items:baseline;gap:7px">' +
+      '<span style="font-size:25px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums">' + v + '</span>' +
+      '<span style="font-size:12.5px;color:var(--ink-2)">' + s + '</span></div>' +
+      '<div class="bar"><i class="' + cls + '" style="width:' + pct + '%"></i></div></div>';
+  }
+
+  function row(t, s, e, c, cls, lab, pub){
+    return '<tr><td><span class="sw' + (pub ? '' : ' off') + '"><i></i></span></td>' +
+      '<td><div style="font-weight:600">' + t + '</div><div style="font-size:12px;color:var(--ink-2)">' + s + '</div></td>' +
+      '<td class="mono">' + e + '</td><td class="mono">' + c + '</td>' +
+      '<td><span class="pill ' + cls + '">' + lab + '</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act" aria-label="Ver posição">' + ICO.olho + '</button>' +
+        '<button class="act" aria-label="Editar posição">' + ICO.lapis + '</button>' +
+        '<button class="act d" aria-label="Excluir posição">' + ICO.lixo + '</button></td></tr>';
+  }
+
+  V.escalacao = function(){
+    var time = [
+      [0,'Produção Técnica','06h–18h','Confirmado','p-ok'],
+      [1,'Operações de Público','08h–20h','Confirmado','p-ok'],
+      [2,'Produção Técnica','06h–18h','Confirmado','p-ok'],
+      [4,'Direção & Gestão','05h–14h','Aguardando','p-wa']
+    ];
+    return '' +
+    '<div class="ph">' +
+      '<div><h1>Escalação</h1><p class="sub">Onboarding Courier · 26 fev · 5 de 8 confirmados</p></div>' +
+      '<div class="acts"><button class="btn btn-g">Exportar lista</button>' +
+      '<button class="btn btn-p" data-go="talentos">+ Convidar talento</button></div>' +
+    '</div>' +
+    '<div class="cols c3" style="margin-bottom:var(--gap)">' +
+      stat('Confirmados','5','/ 8',62,'') +
+      stat('Check-ins hoje','0','/ 5',0,'') +
+      stat('Vagas abertas','3','de 8',38,'') +
+    '</div>' +
+    '<h2 class="sk">Time confirmado <span class="c">' + time.length + '</span></h2>' +
+    '<div class="cols cT">' + time.map(function(p){
+      var t = TAL[p[0]];
+      return '<div class="card" style="padding:15px;display:flex;gap:11px;align-items:center">' +
+        '<div class="tav" style="background:' + AVC[p[0] % AVC.length] + '">' + t.i + '</div>' +
+        '<div style="min-width:0;flex:1">' +
+          '<div class="tn">' + t.n + '</div>' +
+          '<div style="font-size:12.5px;color:var(--ink-2);margin-top:2px">' + p[1] + ' · ' + p[2] + '</div>' +
+        '</div>' +
+        '<span class="pill ' + p[4] + '">' + p[3] + '</span></div>';
+    }).join('') + '</div>' +
+    '<p class="note">A aba se chama Escalação, não "Time" — mesma palavra que o produtor usa no dia a dia.</p>';
+  };
+
+  V.pagamentos = function(){
+    return '' +
+    '<div class="ph"><div><h1>Pagamentos</h1><p class="sub">O que está retido, o que já foi repassado</p></div></div>' +
+    '<div class="hero">' +
+      '<div><div class="k kl">Em custódia Upoppia' + olhoHero() + '</div><div class="v">R$ 48.320,00</div><div class="n">Retido até o repasse</div></div>' +
+      '<div><div class="k">Repassado em outubro</div><div class="v s">R$ 31.900,00</div><div class="n">52 freelancers</div></div>' +
+      '<div class="cta"><button class="btn btn-p">Revisar repasses</button></div>' +
+    '</div>' +
+    '<h2 class="sk" style="margin-top:var(--gap)">Precisa de você <span class="c">3</span></h2>' +
+    '<div class="card">' +
+      task('i-wa',ICO.moeda,'R$ 4.200,00 a provisionar','Lançamento Upoppia Technologies','btn-p','Provisionar') +
+      task('i-da',ICO.alerta,'3 contratos aguardando assinatura','Onboarding Courier · vence em 2 dias','btn-g','Assinar') +
+      task('i-in',ICO.ciclo,'1 repasse agendado para 01/03','Onboarding Courier · R$ 6.050','btn-g','Ver') +
+    '</div>';
+  };
+
+  V.mensagens = function(){
+    return '<div class="ph"><div><h1>Mensagens</h1><p class="sub">2 sem resposta</p></div></div>' +
+    '<div class="card">' +
+      msg('CR','Camila Duarte Rezende','Confirmo presença no dia 26. Precisa que eu leve o rádio?','há 6 horas',true) +
+      msg('BT','Bruno Tavares','Qual o horário de montagem?','há 1 dia',true) +
+      msg('RL','Rafael Monteiro Lima','Obrigado! Até lá.','há 3 dias',false) +
+    '</div>';
+  };
+
+  function msg(i, n, t, w, novo){
+    return '<div class="task"><div class="tav" style="width:36px;height:36px;font-size:13px;background:' + AVC[i.charCodeAt(0) % AVC.length] + '">' + i + '</div>' +
+      '<div class="tb"><div class="tt">' + n + (novo ? ' <span class="pill p-da" style="margin-left:5px">Nova</span>' : '') + '</div>' +
+      '<div class="ts">' + t + '</div></div>' +
+      '<div class="ta"><span style="font-size:12px;color:var(--ink-3)">' + w + '</span></div></div>';
+  }
+
+  /* ---------- navegação ---------- */
+  var CRUMB = {
+    inicio:'<b>Início</b>',
+    talentos:'<a data-go="inicio">Início</a> / <b>Talentos</b>',
+    perfil:'<a data-go="talentos">Talentos</a> / <b>Perfil</b>',
+    eventos:'<a data-go="inicio">Início</a> / <b>Eventos</b>',
+    edicao:'<a data-go="eventos">Eventos</a> / <b>Onboarding Courier</b>',
+    escalacao:'<a data-go="edicao">Onboarding Courier</a> / <b>Escalação</b>',
+    pagamentos:'<a data-go="inicio">Início</a> / <b>Pagamentos</b>',
+    mensagens:'<a data-go="inicio">Início</a> / <b>Mensagens</b>'
+  };
+  var NAVKEY = { perfil:'talentos', escalacao:'escalacao' };
+
+  // Toda troca de tela refaz o HTML, então os valores precisam ser remarcados
+  // e o estado do olho reaplicado — senão a preferência "some" ao navegar.
+  function renderizar(html){
+    screen.innerHTML = html;
+    marcarValores(screen);
+    aplicarPrivacidade();
+  }
+
+  function go(key, arg){
+    var fn = V[key];
+    if (!fn) return;
+    renderizar(fn(arg));
+    screen.scrollTop = 0;
+    crumb.innerHTML = CRUMB[key] || '<b>Início</b>';
+
+    var ativo = NAVKEY[key] || key;
+    var links = document.querySelectorAll('#navList a');
+    for (var i = 0; i < links.length; i++){
+      if (links[i].getAttribute('data-go') === ativo) links[i].setAttribute('aria-current','page');
+      else links[i].removeAttribute('aria-current');
+    }
+    var tabs = document.querySelectorAll('.tabbar button');
+    for (var j = 0; j < tabs.length; j++){
+      if (tabs[j].getAttribute('data-go') === ativo) tabs[j].setAttribute('aria-current','page');
+      else tabs[j].removeAttribute('aria-current');
+    }
+    fecharGaveta();
+  }
+
+  document.addEventListener('click', function(e){
+    var olho = e.target.closest('[data-eye]');
+    if (olho){ alternarPrivacidade(); return; }
+
+    var alvo = e.target.closest('[data-go]');
+    if (alvo){ e.preventDefault(); go(alvo.getAttribute('data-go')); return; }
+
+    var card = e.target.closest('[data-perfil]');
+    if (card && !e.target.closest('.btn')){ go('perfil', +card.getAttribute('data-perfil')); return; }
+
+    var tab = e.target.closest('[data-tab]');
+    if (tab){ renderizar(V.edicao(tab.getAttribute('data-tab'))); return; }
+
+    var f = e.target.closest('.fb');
+    if (f){ f.classList.toggle('on'); return; }
+
+    var sw = e.target.closest('.sw');
+    if (sw){ sw.classList.toggle('off'); return; }
+  });
+
+  /* ---------- gaveta ---------- */
+  var burger = document.getElementById('burger');
+  function abrirGaveta(){
+    nav.classList.add('open'); scrim.classList.add('on');
+    burger.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+  }
+  function fecharGaveta(){
+    nav.classList.remove('open'); scrim.classList.remove('on');
+    burger.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', function(){
+    nav.classList.contains('open') ? fecharGaveta() : abrirGaveta();
+  });
+  scrim.addEventListener('click', fecharGaveta);
+
+  /* ---------- painel de conforto ---------- */
+  var panel = document.getElementById('panel');
+  function abrirPainel(){ panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); }
+  function fecharPainel(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
+  document.getElementById('openPanel').addEventListener('click', abrirPainel);
+  document.getElementById('closePanel').addEventListener('click', fecharPainel);
+
+  panel.addEventListener('click', function(e){
+    var b = e.target.closest('.seg button');
+    if (!b) return;
+    var seg = b.parentElement;
+    var pref = seg.getAttribute('data-pref');
+    var v = b.getAttribute('data-v');
+    var todos = seg.querySelectorAll('button');
+    for (var i = 0; i < todos.length; i++) todos[i].setAttribute('aria-pressed', todos[i] === b ? 'true' : 'false');
+
+    // "sistema" = ausência do atributo, para o @media voltar a mandar
+    if (pref === 'theme'){
+      if (v === 'system') root.removeAttribute('data-theme');
+      else root.setAttribute('data-theme', v);
+    } else if (pref === 'density'){
+      root.setAttribute('data-density', v);
+    } else if (pref === 'calm'){
+      root.setAttribute('data-calm', v);
+    } else if (pref === 'motion'){
+      root.setAttribute('data-motion', v);
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if (panel.classList.contains('open')) fecharPainel();
+    else if (nav.classList.contains('open')) fecharGaveta();
+  });
+
+  root.setAttribute('data-density','comfortable');
+  root.setAttribute('data-calm','off');
+  root.setAttribute('data-motion','on');
+  go('inicio');
+})();
+</script>
+
+</body>
+</html>
